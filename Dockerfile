@@ -1,12 +1,9 @@
-FROM php:8.2-cli
-
-COPY . /app
+# docker build -t myapp:alpine .
+FROM php:8.1-cli-alpine
 WORKDIR /app
+# ekstensions
+RUN docker-php-ext-install pdo_mysql
+COPY . .
 
-RUN apt-get update && apt-get install -y git unzip
-RUN curl -sS https://getcomposer.org/installer | php && \
-    mv composer.phar /usr/local/bin/composer
-
-RUN composer install
-
-CMD ["php", "index.php"]
+EXPOSE 9696
+CMD ["php", "-S", "0.0.0.0:9090", "-t", “src"]
