@@ -37,7 +37,7 @@ pipeline {
         stage('Deploy (local)') {
             steps {
                 script {
-                    dockerImage.run("-d -p 8080:80 --name my-php-app-${env.BUILD_NUMBER}")
+                    dockerImage.run("-d -p 8383:80 --name my-php-app-${env.BUILD_NUMBER}")
                 }
             }
         }
