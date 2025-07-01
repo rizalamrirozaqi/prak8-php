@@ -1,8 +1,9 @@
+def dockerImage
+
 pipeline {
     agent any
 
     stages {
-
         stage('Checkout') {
             steps { checkout scm }
         }
@@ -23,13 +24,11 @@ pipeline {
             }
         }
 
-
         /* ---------- BUILD IMAGE ---------- */
         stage('Build Docker image') {
             steps {
                 script {
-                    // dockerImage = docker.build("my-php-app:${env.BUILD_NUMBER}", "docker")
-                    docker.build("my-php-app:${env.BUILD_NUMBER}", ".")
+                    dockerImage = docker.build("my-php-app:${env.BUILD_NUMBER}", ".")
                 }
             }
         }
