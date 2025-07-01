@@ -10,12 +10,19 @@ pipeline {
         /* ---------- TEST TANPA FRAMEWORK ---------- */
         stage('Lint & Functional Tests') {
             steps {
-                sh '''
-                    chmod +x test.sh
-                    ./test.sh
-                '''
+                script {
+                    docker.image('php:8.2-cli').inside(
+                        "-v $WORKSPACE:/app -w /app"
+                    ) {
+                        sh '''
+                            chmod +x test.sh
+                            ./test.sh
+                        '''
+                    }
+                }
             }
         }
+
 
         /* ---------- BUILD IMAGE ---------- */
         stage('Build Docker image') {
