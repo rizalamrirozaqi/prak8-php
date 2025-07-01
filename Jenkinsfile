@@ -29,7 +29,7 @@ pipeline {
             steps {
                 script {
                     // dockerImage = docker.build("my-php-app:${env.BUILD_NUMBER}", "docker")
-                    docker build -t my-php-app:tag -f docker/Dockerfile .
+                    docker.build("my-php-app:${env.BUILD_NUMBER}", ".")
                 }
             }
         }
