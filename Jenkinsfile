@@ -2,52 +2,41 @@ pipeline {
     agent any
 
     stages {
-        stage('Clone Repo') {
+
+        stage('Checkout') {
+            steps { checkout scm }
+        }
+
+        /* ---------- TEST TANPA FRAMEWORK ---------- */
+        stage('Lint & Functional Tests') {
             steps {
-                echo 'Repo sudah ter-clone oleh SCM.'
+                sh '''
+                    chmod +x test.sh
+                    ./test.sh
+                '''
             }
         }
 
-        stage('Install Dependencies') {
-            steps {
-                echo 'Tidak ada dependency untuk di-install.'
-            }
-        }
-
-        stage('Run Unit Test') {
+        /* ---------- BUILD IMAGE ---------- */
+        stage('Build Docker image') {
             steps {
                 script {
-                    if (isUnix()) {
-                        sh 'php tests/index_test.php'
-                    } else {
-                        bat 'run_tests.bat'
-                    }
+                    dockerImage = docker.build("my-php-app:${env.BUILD_NUMBER}", "docker")
                 }
             }
         }
 
-        stage('Build Docker Image') {
+        /* ---------- DEPLOY LOKAL ---------- */
+        stage('Deploy (local)') {
             steps {
                 script {
-                    if (isUnix()) {
-                        sh 'docker build -t php-simple-app .'
-                    } else {
-                        bat 'docker build -t php-simple-app .'
-                    }
+                    dockerImage.run("-d -p 8080:80 --name my-php-app-${env.BUILD_NUMBER}")
                 }
             }
         }
+    }
 
-        stage('Deploy Container') {
-            steps {
-                script {
-                    if (isUnix()) {
-                        sh 'docker run -d -p 9890:9090 php-simple-app'
-                    } else {
-                        bat 'docker run -d -p 9890:9698 php-simple-app'
-                    }
-                }
-            }
-        }
+    post {
+        always { cleanWs() } 
     }
 }

@@ -1,9 +1,8 @@
-# docker build -t myapp:alpine .
-FROM php:8.1-cli-alpine
-WORKDIR /app
-# ekstensions
-RUN docker-php-ext-install pdo_mysql
-COPY . .
+FROM php:8.2-apache
 
-EXPOSE 9696
-CMD ["php", "-S", "0.0.0.0:9090", "-t", “src"]
+# Salin aplikasi ke docroot Apache
+COPY ./public /var/www/html/
+
+# Hak akses & mod_rewrite (opsional)
+RUN chown -R www-data:www-data /var/www/html
+RUN a2enmod rewrite
